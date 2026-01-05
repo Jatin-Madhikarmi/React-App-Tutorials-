@@ -1,0 +1,11 @@
+# Handle line endings automatically for files detected as text 
+# and leave binary files (like images) alone.
+* text=auto
+
+# Explicitly declare file types you want to always be LF (Unix style)
+# This is great for shell scripts or notebooks
+*.ipynb text eol=lf
+*.sh text eol=lf
+
+# Explicitly declare file types you want to always be CRLF (Windows style)
+*.bat text eol=crlf
