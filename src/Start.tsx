@@ -1,37 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useEffect } from "react";
 
-// 1. Define the Interface so TypeScript knows what a Task is
 interface Task {
   id: number;
   title: string;
 }
-
-function App() {
-  // 2. Use Generics <Task[]> to tell useState this is an array of tasks
+export default function Start() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [inputValue, setInputValue] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [inputValue, setInputValue] = useState<string>("");
 
-  // 3. Fetch data from Express on mount
   useEffect(() => {
-    fetch("http://localhost:3000/tasks")
+    fetch("https://localhost:3000/tasks")
       .then((res) => res.json())
       .then((data: Task[]) => {
         setTasks(data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Error fetching tasks:", err);
+
+      .catch((error) => {
+        console.log("Error fetching tasks", error);
         setLoading(false);
       });
   }, []);
 
-  // 4. Send a POST request to add a new task
   const addTask = async () => {
     if (!inputValue.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:3000/tasks", {
+      const response = await fetch("https://localhost:3000/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: inputValue }),
@@ -39,40 +36,35 @@ function App() {
 
       if (response.ok) {
         const newTask: Task = await response.json();
-        setTasks((prev) => [...prev, newTask]); // Functional update for safety
-        setInputValue(""); // Reset input field
+        setTasks((prev) => [...prev, newTask]);
+        setInputValue("");
       }
     } catch (error) {
-      console.error("Failed to add task:", error);
+      console.log("An error occured", error);
     }
   };
-
   return (
     <div
       style={{
         padding: "40px",
         maxWidth: "400px",
-        margin: "0 auto",
-        fontFamily: "Arial",
+        margin: " 0 auto",
+        font: "Arial",
       }}
     >
-      <h1>Express + React Tasks</h1>
-
-      <div style={{ marginBottom: "20px" }}>
+      <h1>React + Express</h1>
+      <div>
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
           placeholder="What needs to be done?"
-          style={{ padding: "8px", width: "70%" }}
+          onChange={(e) => setInputValue(e.target.value)}
         />
-        <button onClick={addTask} style={{ padding: "8px", marginLeft: "5px" }}>
-          Add
-        </button>
+        <button onClick={addTask}>Add</button>
       </div>
 
       {loading ? (
-        <p>Loading tasks from server...</p>
+        <p>Server is loading</p>
       ) : (
         <ul>
           {tasks.map((task) => (
@@ -85,5 +77,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
